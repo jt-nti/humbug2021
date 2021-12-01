@@ -1,6 +1,4 @@
 use std::path::PathBuf;
-use std::fs::File;
-use std::io::{BufRead, BufReader, Error, ErrorKind, Read};
 
 pub fn part1(input_path: &PathBuf) {
     let mut total: u32 = 0;
@@ -29,40 +27,43 @@ pub fn part1(input_path: &PathBuf) {
 }
 
 pub fn part2(input_path: &PathBuf) {
-    let mut total: u32 = 0;
-    let mut previous: Option<u32> = None;
-
-    let file = File::open(input_path).expect("could not open file");
-    let depths = read_input(file).expect("could not read file");
-
     let window_size: usize = 3;
-    let depths_size = depths.len();
+    let mut total: u32 = 0;
+    let mut previous_window = Vec::with_capacity(window_size);
+    let mut current_window = Vec::with_capacity(window_size);
 
-    let mut window: usize = 0;
-    while window <= depths_size - window_size {
-        let sum: u32 = depths[window..window + window_size].iter().sum();
-        if let Some(value) = previous {
-            if sum > value {
-                println!("{} (increased)", sum);
-                total += 1
-            } else if sum < value {
-                println!("{} (decreased)", sum);
-            } else {
-                println!("{} (no change)", sum);
+    let content = std::fs::read_to_string(input_path).expect("could not read file");
+    for line in content.lines() {
+        let depth: u32 = line.parse().expect("Not a number!");
+
+        current_window.push(depth);
+
+        if current_window.len() == window_size {
+            let current_sum: u32 = current_window.iter().sum();
+            let mut previous_sum: Option<u32> = None;
+            if previous_window.iter().len() == window_size {
+                previous_sum = Some(previous_window.iter().sum());
             }
-        } else {
-            println!("{} (N/A - no previous measurement)", sum);
+
+            if let Some(value) = previous_sum {
+                if current_sum > value {
+                    println!("{} (increased)", current_sum);
+                    total += 1
+                } else if current_sum < value {
+                    println!("{} (decreased)", current_sum);
+                } else {
+                    println!("{} (no change)", current_sum);
+                }
+            } else {
+                println!("{} (N/A - no previous sum)", current_sum);
+            }
+
+            previous_window = current_window.clone();
+            current_window.remove(0);
         }
-        previous = Some(sum);
-        window += 1;
+
+        
     }
 
     println!("Depth increased {} times", total);
-}
-
-fn read_input<R: Read>(io: R) -> Result<Vec<u32>, Error> {
-    let br = BufReader::new(io);
-    br.lines()
-        .map(|line| line.and_then(|v| v.parse().map_err(|e| Error::new(ErrorKind::InvalidData, e))))
-        .collect()
 }
