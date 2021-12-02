@@ -3,10 +3,11 @@
 // Based on https://rust-cli.github.io/book/index.html
 //
 mod day1;
+mod day2;
 
 use structopt::StructOpt;
 
-const DAY: u8 = 1;
+const DAY: u8 = 2;
 
 /// Process input for day one of the Advent of Code.
 #[derive(Debug,StructOpt)]
@@ -27,12 +28,22 @@ fn main() {
         panic!("Invalid day! Day {} must be between 1 and {}", args.day, DAY);
     }
 
-    if args.part == 1 {
-        day1::part1(&args.path);
-    } else if args.part == 2 {
-        day1::part2(&args.path);
-    } else {
+    if (args.part < 1) || (args.part > 2) {
         panic!("Invalid part! Part {} must be 1 or 2", args.part);
     }
-    
+
+    // TODO find a better way to do this!
+    if args.day == 1 {
+        if args.part == 1 {
+            day1::part1(&args.path);
+        } else if args.part == 2 {
+            day1::part2(&args.path);
+        }
+    } else if args.day == 2 {
+        if args.part == 1 {
+            day2::part1(&args.path);
+        } else if args.part == 2 {
+            day2::part2(&args.path);
+        }
+    }
 }
