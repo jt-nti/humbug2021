@@ -4,10 +4,11 @@
 //
 mod day1;
 mod day2;
+mod day3;
 
 use structopt::StructOpt;
 
-const DAY: u8 = 2;
+const DAY: u8 = 3;
 
 /// Process input for day one of the Advent of Code.
 #[derive(Debug,StructOpt)]
@@ -44,6 +45,12 @@ fn main() {
             day2::part1(&args.path);
         } else if args.part == 2 {
             day2::part2(&args.path);
+        }
+    } else if args.day == 3 {
+        if args.part == 1 {
+            day3::part1(&args.path);
+        } else if args.part == 2 {
+            day3::part2(&args.path);
         }
     }
 }
